@@ -589,45 +589,6 @@ Function FinalStatistics
 
     Log "`n===================================================================================="
 }
-function Get-PlexCredential
-{
-    #'------------------------------------------------------------------------------
-    #'Get Credentials, convert to Base64 for basic HTML Authentication
-    #'------------------------------------------------------------------------------
-    [string]$command = "Get-credential"
-    Try
-    {
-        $cred           = Get-Credential
-        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $cred.GetNetworkCredential().UserName,$cred.GetNetworkCredential().Password)))
-    }
-    catch
-    {
-        break;
-    }
-    #'------------------------------------------------------------------------------
-    #'Invoke REST API
-    #'------------------------------------------------------------------------------
-    [string]$command = "Invoke-RestMethod -Uri ""https://plex.tv/users/sign_in.xml""-Method POST -headers   @{'Authorization'=(""Basic {0}"" -f $base64AuthInfo);'X-Plex-Client-Identifier'=""TestApp"";'X-Plex-Product'=""TestScript"";'X-Plex-Version'=""V1.00"";'X-Plex-Username'=$cred.GetNetworkCredential().UserName;}" 
-    Try
-    {
-        [array]$data =  Invoke-RestMethod `
-                        -Uri "https://plex.tv/users/sign_in.xml"` 
-                        -Method POST `
-                        -headers   @{
-                                        'Authorization'=("Basic {0}" -f $base64AuthInfo);
-                                        'X-Plex-Client-Identifier'="PowerShell-Test";
-                                        'X-Plex-Product'='PowerShell-Test';
-                                        'X-Plex-Version'="V0.01";
-                                        'X-Plex-Username'=$cred.GetNetworkCredential().UserName;
-                                    }
-        $authToken   = $data.user.authenticationToken
-    }
-    catch
-    {
-    }
-    return $authToken
-}
-
 Function Get-PlexRecentlyAddded
 {
     # Parameter help description
@@ -694,6 +655,29 @@ Function Get-PlexMediaPath
     }        
 }
 
+Function Get-PlexToken {
+    <#
+        Based on original Powershell to pull token posted on Plex forum by ccarvell-plex.
+    
+        Updated to be a function, and to accept PSCredentials passed in via get-credential
+    #>
+        param(
+            [Parameter(Mandatory=$True)]
+            [System.Management.Automation.PSCredential]$Credential
+            )
+       
+        $url = "https://plex.tv/users/sign_in.xml"
+        $headers = @{}
+        $headers.Add("Authorization","Basic $($EncodedPassword)") | out-null
+        $headers.Add("X-Plex-Client-Identifier","TESTSCRIPTV1") | Out-Null
+        $headers.Add("X-Plex-Product","Test script") | Out-Null
+        $headers.Add("X-Plex-Version","V1") | Out-Null
+        [xml]$res = Invoke-RestMethod -Headers:$headers -Method Post -Uri:$url -Credential $Credential
+        $token = $res.user.authenticationtoken
+        return $token
+    }
+    
+    
 Function Set-Conv2Mp4
 {
 	param(
@@ -984,6 +968,3 @@ Function Set-Conv2Mp4
 	}
 	return
 }
-
-#Pass matchedFileList to conv2mp4.ps1
-#$currentTime | Out-File -FilePath "$PSScriptRoot\timestamp.txt" # Remove old file first... still needs done...only execute if no errors
