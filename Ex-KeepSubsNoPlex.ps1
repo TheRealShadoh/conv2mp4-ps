@@ -9,9 +9,9 @@ Script Setup:
             -   Call Set-Conv2Mp4 and fill in the parameters, not all parameters are mandatory
             -   Get-help on specific modules for more information
 
-Example Scenario:
+Example Scenario: Keep Subs No Plex
     The script targets a parent directory containing sub folders for Anime, Movies, and TV Shows. 
-    The script keeps subtitles, and does not update plex when complete. 
+    The script does not keep subtitles, and does not update plex when complete. 
 
 #>
 
@@ -24,4 +24,5 @@ $plexIP = "192.168.1.9"
 $ffmpegDir = "C:\ffmpeg\bin"
 $handbrakeDir = "C:\Program Files\HandBrake"
 
-Set-Conv2Mp4 -Path "\\192.168.1.5\media" -PlexIP "192.168.1.9" -ffmpegDir "C:\ffmpeg\bin" -HandbrakeDir "C:\Program Files\HandBrake" -KeepSubs $True -UsePlex $false
+# Do the thing
+Set-Conv2Mp4 -Path $mediaPath -PlexIP $plexIP -ffmpegDir $ffmpegDir -HandbrakeDir $handbrakeDir -KeepSubs $True -UsePlex $false

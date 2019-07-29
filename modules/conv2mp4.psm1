@@ -598,7 +598,7 @@ Function Get-PlexRecentlyAddded
         [string]$plexToken = "plextoken"
         )
     $plexURL = "http://$plexIP/library/recentlyAdded/refresh?X-Plex-Token=$plexToken"
-    $RawResult = Invoke-WebRequest $plexURL -UseBasicParsing -Method Get -ContentType 'application/json' -Headers @{"Accept"="application/json";"X-Plex-Username" = "$cred.GetNetworkCredential().UserName"; "X-Plex-Token" = "$authToken"}
+    $RawResult = Invoke-WebRequest $plexURL -UseBasicParsing -Method Get -ContentType 'application/json' -Headers @{"Accept"="application/json"; "X-Plex-Token" = "$plexToken"}
     $RawResult = ($RawResult.content | ConvertFrom-Json).mediacontainer.metadata
     $RawResult = $RawResult | Where {$_.media -ne $null} # Filter to only return recently added video files
     $RecentlyAddedArray = @()
