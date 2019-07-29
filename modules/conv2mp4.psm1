@@ -595,9 +595,10 @@ Function Get-PlexRecentlyAddded
     param(
         [Parameter(Mandatory=$True)]
         $PlexIP,
+        $PlexPort = [string]"32400",
         [string]$plexToken = "plextoken"
         )
-    $plexURL = "http://$plexIP/library/recentlyAdded/refresh?X-Plex-Token=$plexToken"
+    $plexURL = "http://$($plexIP):$($plexPort)/library/recentlyAdded/refresh?X-Plex-Token=$plexToken"
     $RawResult = Invoke-WebRequest $plexURL -UseBasicParsing -Method Get -ContentType 'application/json' -Headers @{"Accept"="application/json"}
     $RawResult = ($RawResult.content | ConvertFrom-Json).mediacontainer.metadata
     $RawResult = $RawResult | Where {$_.media -ne $null} # Filter to only return recently added video files
@@ -825,7 +826,7 @@ Function Set-Conv2Mp4
 		{
 			$newFile = $file.DirectoryName + "\" + $file.BaseName + ".mp4";
 		}
-		$plexURL = "http://$plexIP/library/sections/all/refresh?X-Plex-Token=$plexToken"
+		$plexURL = "http://$($plexIP):$($plexPort)/library/sections/all/refresh?X-Plex-Token=$plexToken"
 		$progress = ($i / $fileCount) * 100
 		$progress = [Math]::Round($progress,2)
 

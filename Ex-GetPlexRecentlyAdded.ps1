@@ -17,7 +17,8 @@ $creds = Get-Credential -Message "Enter your Plex credentials, they will be used
 
 # Configure personalized parameters
 $plexIP = "192.168.1.9"
+$plexPort= "32400"
 $plexToken = Get-PlexToken -Credential $creds # Internet access is required for this module at this time.
 
 # Do the thing
-$recentFiles = Get-PlexRecentlyAddded -PlexIP $plexip -plexToken $plexToken # Parsing of the list to determine what you care about is not covered here, example of current time in the same format as this variable has $currentTime = (Get-Date (Get-Date).ToUniversalTime() -UFormat %s).split('.')[0]
+$recentFiles = Get-PlexRecentlyAddded -PlexIP $plexip -PlexPort $plexPort -plexToken $plexToken # Parsing of the list to determine what you care about is not covered here, example of current time in the same format as this variable has $currentTime = (Get-Date (Get-Date).ToUniversalTime() -UFormat %s).split('.')[0]
